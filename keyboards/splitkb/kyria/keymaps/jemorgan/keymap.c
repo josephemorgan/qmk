@@ -15,9 +15,8 @@
  */
 #include QMK_KEYBOARD_H
 #include <stdio.h>
-#include "./animation.h"
+#include "./ocean_animation.h"
 
-char wpm_str[10];
 
 enum layers {
     _QWERTY = 0,
@@ -37,8 +36,10 @@ enum custom_keycodes {
 #define FUNCTION MO(_FUNCTION)
 #define ADJUST MO(_ADJUST)
 
-#define CTL_ESC  MT(MOD_LCTL, KC_ESC)
-#define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
+#define CTL_TAB MT(MOD_LCTL, KC_TAB)
+#define CTL_ENT MT(MOD_RCTL, KC_ENT)
+
+bool lighting_enabled = true;
 
 // produces the key `tap` when tapped (i.e. pressed and released).
 // The notation `mod/tap` denotes a key that activates the modifier `mod` when held down, and
@@ -48,9 +49,9 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
             KC_GRV,   KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,                                      KC_Y,   KC_U ,  KC_I ,   KC_O ,  KC_P , KC_MINS,
-            CTL_ESC, KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,                                      KC_H,   KC_J ,  KC_K ,   KC_L ,KC_SCLN,CTL_QUOT,
+            KC_ESC, KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,                                      KC_H,   KC_J ,  KC_K ,   KC_L ,KC_SCLN,KC_QUOTE,
             KC_LSFT, KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , LOWER, ADJUST,      FUNCTION, RAISE, KC_N,   KC_M ,KC_COMM, KC_DOT ,KC_SLSH, MT(MOD_RSFT, KC_BSLS),
-            ADJUST , KC_LALT, KC_LGUI, KC_SPC, KC_TAB,     KC_BSPC, KC_ENT, KC_RGUI, KC_RALT, KC_APP
+            ADJUST , KC_LALT, KC_LGUI, KC_SPC, CTL_TAB,     CTL_ENT, KC_BSPC, KC_RGUI, KC_RALT, KC_APP
             ),
 
     [_LOWER] = LAYOUT(
@@ -83,23 +84,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-/*
-   bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-   if (!process_case_modes(keycode, record)) {
-   return false;
-   }
-
-   switch (keycode) {
-   case CAPSWORD:
-   if (record->event.pressed) {
-   toggle_caps_word();
-   }
-   return false;
-   default:
-   return false;
-   }
-   }
-   */
+uint32_t oled_timer;
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    oled_timer = timer_read32();
+    return true;
+}
 
 /* The default OLED and rotary encoder code can be found at the bottom of qmk_firmware/keyboards/splitkb/kyria/rev1/rev1.c
  * These default settings can be overriden by your own settings in your keymap._______c
@@ -110,31 +99,42 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef OLED_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
 
-#define ANIMATION_FRAME_DURATION 1000
-static uint16_t animation_timer = 0;
-void decompress_and_write_frame(uint8_t frame_number) {
-    for (size_t i = 0; i < sizeof(koi_animation[frame_number]); i += 2) {
-        for (size_t j = 0; j < koi_animation[frame_number][i]; ++j) {
-            oled_write_raw_byte(koi_animation[frame_number][i + 1], false);
-        }
+#define ANIMATION_FRAME_DURATION 1500
+#define OLED_TIMEOUT_MS 30000
+static uint32_t animation_timer = 0;
+static int frame = 0;
+
+void render_slave_animation(void) {
+    if (timer_elapsed32(animation_timer) > ANIMATION_FRAME_DURATION) {
+        ++frame;
+        frame %= OCEAN_ANIMATION_FRAMES;
+        animation_timer = timer_read32();
     }
+    oled_write_raw_P(ocean_animation[frame], sizeof(ocean_animation[frame]));
 }
 
-void render_animation(void) {
-    if (timer_elapsed(animation_timer) < ANIMATION_FRAME_DURATION) {
-    decompress_and_write_frame(0);
-    } else if (timer_elapsed(animation_timer) < ANIMATION_FRAME_DURATION * 2) {
-    decompress_and_write_frame(1);
-    } else {
-        animation_timer = timer_read();
+void render_master_animation(void) {
+    if (timer_elapsed32(animation_timer) > ANIMATION_FRAME_DURATION) {
+        ++frame;
+        frame %= OCEAN_ANIMATION_FRAMES;
+        animation_timer = timer_read32();
     }
+    oled_write_raw_P(ocean_animation[frame + 2], sizeof(ocean_animation[frame]));
 }
 
 bool oled_task_user(void) {
-    if (is_keyboard_master()) {
-        oled_write_P(PSTR("jemorgan.dev\n\n"), false);
+    if (timer_elapsed32(oled_timer) > OLED_TIMEOUT_MS) {
+        oled_off();
+        return false;
+    }
 
-        // Host Keyboard Layer Status
+    if (animation_timer == 0)
+        animation_timer = timer_read();
+
+    if (is_keyboard_master()) {
+        if (lighting_enabled)
+            render_master_animation();
+        oled_set_cursor(0, 0);
         oled_write_P(PSTR("Layer: "), false);
         switch (get_highest_layer(layer_state|default_layer_state)) {
         case _QWERTY:
@@ -155,10 +155,12 @@ bool oled_task_user(void) {
         default:
             oled_write_P(PSTR("Undefined\n"), false);
         }
-        sprintf(wpm_str, "\n\nWPM:%03d", get_current_wpm());  // edit the string to change wwhat shows up, edit %03d to change how many digits show up
-        oled_write(wpm_str, false);                       // writes wpm on top left corner of string
     } else {
-        render_animation();
+        render_slave_animation();
+        oled_set_cursor(0, 0);
+        char wpm_str[10];
+        sprintf(wpm_str, "Words/Minute:%03d", get_current_wpm());
+        oled_write(wpm_str, false);
     }
     return false;
 }
@@ -177,9 +179,9 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     } else if (index == 1) {
         // Page up/Page down
         if (clockwise) {
-            tap_code16(KC_MS_WH_DOWN);
+            tap_code16(KC_PGDN);
         } else {
-            tap_code16(KC_MS_WH_UP);
+            tap_code16(KC_PGUP);
         }
     }
     return false;
