@@ -47,3 +47,6 @@
 
 // Most tactile encoders have detents every 4 stages
 #define ENCODER_RESOLUTION 4
+
+#define ONESHOT_TAP_TOGGLE 3
+#define ONESHOT_TIMEOUT 1000

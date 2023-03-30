@@ -53,7 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,      KC_MINS,
       KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
       OSM(MOD_LSFT),  KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,    OSM(MOD_RSFT),
-                                               KC_LEAD,      KC_LALT,      KC_LGUI,       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    KC_RGUI,      KC_RALT,      MO(_ADJUST) 
+                                           MO(_ADJUST),      KC_LALT,      KC_LGUI,       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    KC_RGUI,      KC_RALT,      MO(_ADJUST) 
 ),
 [_BLOCK_OSM] = LAYOUT(
         _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
@@ -80,10 +80,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______
 ),
 [_ADJUST] = LAYOUT(
-        _______, _______, _______, _______, _______, _______,                                            _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______,                                            _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______,        _______, _______, _______, _______, _______, _______, _______, _______, _______,
-                                   _______, _______, _______, _______, TG(_BLOCK_OSM), _______, _______, _______, _______, _______
+        _______, LCAG(KC_1), LCAG(KC_2), LCAG(KC_3), LCAG(KC_4), LCAG(KC_5),                                 _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,        _______,    _______, _______,  _______, RGB_MODE_FORWARD, RGB_MODE_REVERSE, _______, _______, _______,
+                                   _______, _______, _______, _______, TG(_BLOCK_OSM),    _______, _______,  _______, _______, _______
 ),
 };
 
@@ -108,6 +108,9 @@ bool oled_task_user(void) {
             break;
         case _FUNCTION:
             oled_write_P(PSTR("Function\n"), false);
+            break;
+        case _ADJUST:
+            oled_write_P(PSTR("Adjust\n"), false);
             break;
         default:
             oled_write_P(PSTR("Undefined\n"), false);
