@@ -39,6 +39,7 @@
 
 enum layers {
     _QWERTY = 0,
+    _WINDOWS,
     _BLOCK_OSM,
     _NUMBER,
     _SYMBOL,
@@ -49,7 +50,10 @@ enum layers {
 enum custom_keycodes {
     CAPSWORD = SAFE_RANGE,
     SNAKECASE,
-    KVM_LEADER,
+    KVM_INPUT_ONE,
+    KVM_INPUT_TWO,
+    KVM_TOGGLE_MOUSE,
+    KVM_TOGGLE_KEYBOARD
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -57,7 +61,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,      KC_MINS,
             KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
             OSM(MOD_LSFT),  KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,    OSM(MOD_RSFT),
-            MO(_ADJUST),      KC_LALT,      KC_LGUI,       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    KC_RGUI,      KC_RALT,      MO(_ADJUST)
+            MO(_ADJUST),      OSM(MOD_LALT),      OSM(MOD_LGUI),       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    OSM(MOD_RGUI),      OSM(MOD_RALT),      MO(_ADJUST)
+            ),
+    [_WINDOWS] = LAYOUT(
+            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,      KC_MINS,
+            KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
+            OSM(MOD_LSFT),  KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,    OSM(MOD_RSFT),
+            MO(_ADJUST),      OSM(MOD_LGUI),      OSM(MOD_LALT),       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    OSM(MOD_RALT),      OSM(MOD_RGUI),      MO(_ADJUST)
             ),
     [_BLOCK_OSM] = LAYOUT(
             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
@@ -85,9 +95,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             ),
     [_ADJUST] = LAYOUT(
             _______, LCAG(KC_1), LCAG(KC_2), LCAG(KC_3), LCAG(KC_4), LCAG(KC_5),                                 _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______, _______,
+            _______, KVM_INPUT_ONE, KVM_INPUT_TWO, KVM_TOGGLE_KEYBOARD, KVM_TOGGLE_MOUSE, _______,                                                _______, _______, _______, _______, _______, _______,
             _______, _______, _______, _______, _______, _______, _______,        _______,    _______, _______,  _______, RGB_MODE_FORWARD, RGB_MODE_REVERSE, _______, _______, _______,
-            _______, _______, _______, KVM_LEADER, TG(_BLOCK_OSM),    _______, _______,  _______, _______, _______
+            _______, _______, _______, DF(_WINDOWS), TG(_BLOCK_OSM),                                      _______, _______, _______, _______, _______
             ),
 };
 
@@ -178,14 +188,6 @@ void matrix_scan_user(void) {
 struct buffer *keyboard_buffer = NULL;
 char *buffer_as_string = NULL;
 
-const key_override_t space_tab_override = ko_make_basic(MOD_MASK_SHIFT, KC_SPACE, KC_TAB);
-const key_override_t bs_enter_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_ENT);
-const key_override_t **key_overrides = (const key_override_t *[]){
-    &space_tab_override,
-    &bs_enter_override,
-    NULL
-};
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         if (keycode >= 0xe0 && keycode <= 0xe7) {
@@ -193,12 +195,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
 
         switch (keycode) {
-            case KVM_LEADER:
+            case KVM_INPUT_ONE:
                 if (record->event.pressed) {
                     tap_code(KC_RIGHT_CTRL);
                     tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_1);
+                    tap_code(KC_ENT);
                 }
-            break;
+                break;
+            case KVM_INPUT_TWO:
+                if (record->event.pressed) {
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_2);
+                    tap_code(KC_ENT);
+                }
+                break;
+            case KVM_TOGGLE_KEYBOARD:
+                if (record->event.pressed) {
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_K);
+                    tap_code(KC_ENT);
+                }
+                break;
+            case KVM_TOGGLE_MOUSE:
+                if (record->event.pressed) {
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_RIGHT_CTRL);
+                    tap_code(KC_M);
+                    tap_code(KC_ENT);
+                }
+                break;
         }
 
     } else {

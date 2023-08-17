@@ -5,6 +5,7 @@ RGBLIGHT_ENABLE = yes      # Enable keyboard RGB underglow
 MOUSEKEY_ENABLE = yes
 LEADER_ENABLE = yes
 
+
 EXTRAKEY_ENABLE = no # Audio control and System control
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
