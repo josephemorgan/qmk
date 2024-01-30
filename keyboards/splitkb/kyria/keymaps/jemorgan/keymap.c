@@ -39,8 +39,7 @@
 
 enum layers {
     _QWERTY = 0,
-    _WINDOWS,
-    _BLOCK_OSM,
+    _GAME,
     _NUMBER,
     _SYMBOL,
     _FUNCTION,
@@ -58,22 +57,16 @@ enum custom_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
-            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,      KC_MINS,
+            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,      KC_P,        KC_MINS,
             KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
-            OSM(MOD_LSFT),  KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,    OSM(MOD_RSFT),
-            MO(_ADJUST),      OSM(MOD_LALT),      OSM(MOD_LGUI),       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    OSM(MOD_RGUI),      OSM(MOD_RALT),      MO(_ADJUST)
+            MOD_LSFT,       KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,     OSM(MOD_RSFT),
+                                                        MO(_ADJUST),  MOD_LALT,     MOD_LGUI,     KC_SPC,      CTL_TAB,      CTL_ENT,     KC_BSPC,     MOD_RGUI,     MOD_RALT,        MO(_ADJUST)
             ),
-    [_WINDOWS] = LAYOUT(
-            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,      KC_MINS,
-            KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
-            OSM(MOD_LSFT),  KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,    OSM(MOD_RSFT),
-            MO(_ADJUST),      OSM(MOD_LGUI),      OSM(MOD_LALT),       KC_SPC,        CTL_TAB,      CTL_ENT,      KC_BSPC,    OSM(MOD_RALT),      OSM(MOD_RGUI),      MO(_ADJUST)
-            ),
-    [_BLOCK_OSM] = LAYOUT(
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            KC_LSFT, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_RSFT,
-            _______, KC_LALT, KC_LGUI, _______, _______, _______, _______, KC_RGUI, KC_RALT, _______
+    [_GAME] = LAYOUT(
+            KC_ESC,  KC_LALT, KC_W, KC_E,      KC_R,  KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,      KC_P,        KC_MINS,
+            KC_TAB,  KC_LSFT, KC_S, KC_D,      KC_F,  KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
+            KC_HOME, KC_LCTL, KC_X, KC_C,      KC_V,  KC_B,  KC_F3,  KC_F4,             FUNCTION, RAISE,   KC_N,     KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,     OSM(MOD_RSFT),
+                                    TG(_GAME), KC_F1, KC_F2, KC_SPC, CTL_TAB,           CTL_ENT,  KC_BSPC, MOD_RGUI, MOD_RALT,        MO(_ADJUST)
             ),
     [_SYMBOL] = LAYOUT(
             _______,   LSFT(KC_1),   LSFT(KC_2),   LSFT(KC_3),   LSFT(KC_4),   LSFT(KC_5),                                                           LSFT(KC_6),   LSFT(KC_7),   LSFT(KC_8),   LSFT(KC_9),   LSFT(KC_0),       KC_EQL,
@@ -95,9 +88,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             ),
     [_ADJUST] = LAYOUT(
             _______, LCAG(KC_1), LCAG(KC_2), LCAG(KC_3), LCAG(KC_4), LCAG(KC_5),                                 _______, _______, _______, _______, _______, _______,
-            _______, KVM_INPUT_ONE, KVM_INPUT_TWO, KVM_TOGGLE_KEYBOARD, KVM_TOGGLE_MOUSE, _______,                                                _______, _______, _______, _______, _______, _______,
+            _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______, _______,
             _______, _______, _______, _______, _______, _______, _______,        _______,    _______, _______,  _______, RGB_MODE_FORWARD, RGB_MODE_REVERSE, _______, _______, _______,
-            _______, _______, _______, DF(_WINDOWS), TG(_BLOCK_OSM),                                      _______, _______, _______, _______, _______
+            _______, TG(_GAME), DF(_QWERTY), _______, _______,                                      _______, _______, _______, _______, _______
             ),
 };
 
@@ -178,7 +171,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 void matrix_scan_user(void) {
     if (is_alt_tab_active) {
-        if (timer_elapsed(alt_tab_timer) > 1000) {
+        if (timer_elapsed(alt_tab_timer) > 600) {
             unregister_code(KC_LALT);
             is_alt_tab_active = false;
         }
@@ -248,8 +241,8 @@ void render_keyboard_state(void) {
         case _QWERTY:
             oled_write_ln("     Layer: Base    ", false);
             break;
-        case _BLOCK_OSM:
-            oled_write_ln("  Layer: Block OSM  ", false);
+        case _GAME:
+            oled_write_ln("    Layer: Game     ", false);
             break;
         case _NUMBER:
             oled_write_ln("    Layer: Number   ", false);
