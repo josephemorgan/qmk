@@ -14,8 +14,5 @@ GRAVE_ESC_ENABLE = no
 MAGIC_ENABLE = no
 MUSIC_ENABLE = no
 
-
-OLED_DRIVER = SSD1306   # Enables the use of OLED displays
-
 EXTRAFLAGS += -flto
 CAPS_WORD_ENABLE = yes
