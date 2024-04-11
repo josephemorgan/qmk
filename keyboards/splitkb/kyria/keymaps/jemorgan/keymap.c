@@ -1,19 +1,3 @@
-/* Copyright 2019 Thomas Baart <thomas@splitkb.com>
- * Copyright 2023 Joseph Morgan <j@jemorgan.dev>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 #include <stdint.h>
 #include <stdlib.h>
 #include "action_util.h"
@@ -25,6 +9,7 @@
 #include "oled_driver.h"
 #include "../../../../../users/jemorgan/buffer.h"
 #include "quantum.h"
+#include "./secrets.h"
 #include QMK_KEYBOARD_H
 
 #define RAISE MO(_NUMBER)
@@ -49,10 +34,6 @@ enum layers {
 enum custom_keycodes {
     CAPSWORD = SAFE_RANGE,
     SNAKECASE,
-    KVM_INPUT_ONE,
-    KVM_INPUT_TWO,
-    KVM_TOGGLE_MOUSE,
-    KVM_TOGGLE_KEYBOARD
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -60,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,      KC_P,        KC_MINS,
             KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
             KC_LSFT,       KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,     OSM(MOD_RSFT),
-                                                        MO(_ADJUST),  KC_LALT,     KC_LGUI,     KC_SPC,      CTL_TAB,      CTL_ENT,     KC_BSPC,     KC_RGUI,     KC_RALT,        MO(_ADJUST)
+                                                        MO(_ADJUST),  KC_LALT,     KC_LGUI,     KC_SPC,      CTL_TAB,      CTL_ENT,     KC_BSPC,     KC_RGUI,     KC_RALT,        KC_LEAD
             ),
     [_GAME] = LAYOUT(
             KC_ESC,  KC_1,    KC_2, KC_3,  KC_4,  KC_5,                                                KC_6,   KC_7,   KC_8,    KC_9,   KC_0,    KC_MINS,
@@ -93,6 +74,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             _______, DF(_GAME), DF(_QWERTY), _______, _______,                                      _______, _______, _______, _______, _______
             ),
 };
+
+void leader_start_user(void) {
+}
+
+void leader_end_user(void) {
+    if (leader_sequence_two_keys(KC_P, KC_W)) {
+        SEND_STRING(WORK_PASS);
+    }
+}
+
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
 
@@ -188,38 +179,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
 
         switch (keycode) {
-            case KVM_INPUT_ONE:
-                if (record->event.pressed) {
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_1);
-                    tap_code(KC_ENT);
-                }
-                break;
-            case KVM_INPUT_TWO:
-                if (record->event.pressed) {
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_2);
-                    tap_code(KC_ENT);
-                }
-                break;
-            case KVM_TOGGLE_KEYBOARD:
-                if (record->event.pressed) {
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_K);
-                    tap_code(KC_ENT);
-                }
-                break;
-            case KVM_TOGGLE_MOUSE:
-                if (record->event.pressed) {
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_RIGHT_CTRL);
-                    tap_code(KC_M);
-                    tap_code(KC_ENT);
-                }
-                break;
         }
 
     } else {
@@ -296,10 +255,5 @@ void render_keyboard_state(void) {
         oled_advance_page(true);
         oled_advance_page(true);
         oled_write(buffer_as_string, false);
-        //struct node *current_node = keyboard_buffer->tail;
-        //do {
-        //    oled_write_char(current_node->data, false);
-        //    current_node = current_node->next;
-        //} while (current_node);
     }
 }
