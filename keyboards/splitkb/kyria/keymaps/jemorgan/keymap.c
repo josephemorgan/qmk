@@ -12,54 +12,52 @@
 #include "./secrets.h"
 #include QMK_KEYBOARD_H
 
-#define RAISE MO(_NUMBER)
-#define LOWER MO(_SYMBOL)
-#define FUNCTION MO(_FUNCTION)
+#define RAISE OSL(_NUMBER)
+#define LOWER OSL(_SYMBOL)
+#define FUNCTION OSL(_FUNCTION)
+#define CWT QK_CAPS_WORD_TOGGLE
+#define CK_UNDRSC LSFT(KC_MINS)
 
-#define CTL_TAB MT(MOD_LCTL, KC_TAB)
-#define CTL_ENT MT(MOD_RCTL, KC_ENT)
-#define RSFT_BSLS MT(MOD_RSFT, KC_BSLS)
 #define LCURL LSFT(KC_LBRC)
 #define RCURL LSFT(KC_RBRC)
 
 enum layers {
     _QWERTY = 0,
-    _GAME,
-    _NUMBER,
     _SYMBOL,
+    _NUMBER,
     _FUNCTION,
-    _ADJUST
+    _ADJUST,
+    _GAME,
+    _TRANS
 };
-
 enum custom_keycodes {
-    CAPSWORD = SAFE_RANGE,
-    SNAKECASE,
+    _ARROW = SAFE_RANGE
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
-            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,      KC_P,        KC_MINS,
-            KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_QUOTE,
-            KC_LSFT,       KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,     OSM(MOD_RSFT),
-                                                        MO(_ADJUST),  KC_LALT,     KC_LGUI,     KC_SPC,      CTL_TAB,      CTL_ENT,     KC_BSPC,     KC_RGUI,     KC_RALT,        KC_LEAD
+            KC_GRV,         KC_Q,         KC_W,         KC_E,         KC_R,         KC_T,                                                                 KC_Y,         KC_U,         KC_I,         KC_O,      KC_P,        KC_TAB,
+            KC_ESC,         KC_A,         KC_S,         KC_D,         KC_F,         KC_G,                                                                 KC_H,         KC_J,         KC_K,         KC_L,      KC_SCLN,     KC_ENT,
+            OSM(MOD_LSFT),       KC_Z,         KC_X,         KC_C,         KC_V,         KC_B,        LOWER,       FUNCTION,     FUNCTION,        RAISE,       KC_N,         KC_M,      KC_COMM,       KC_DOT,      KC_SLSH,     OSM(MOD_RSFT),
+            MO(_ADJUST),  OSM(MOD_LALT),     OSM(MOD_LGUI),     KC_SPC,      OSM(MOD_LCTL),      OSM(MOD_RCTL),     KC_BSPC,     OSM(MOD_RGUI),     OSM(MOD_RALT),        QK_LEAD
             ),
     [_GAME] = LAYOUT(
-            KC_ESC,  KC_1,    KC_2, KC_3,  KC_4,  KC_5,                                                KC_6,   KC_7,   KC_8,    KC_9,   KC_0,    KC_MINS,
-            KC_F7,   KC_LSFT, KC_A, KC_W,  KC_D,  KC_G,                                                KC_H,   KC_J,   KC_K,    KC_L,   KC_SCLN, KC_QUOTE,
-            KC_F8,   KC_LCTL, KC_X, KC_S,  KC_V,  KC_B,  KC_F5, KC_F6,             KC_F13,  KC_F14,   KC_N,   KC_M,   KC_COMM, KC_DOT, KC_SLSH, KC_F15,
-                               DF(_QWERTY),  KC_LALT, KC_TAB, KC_SPC, KC_ENT,             KC_F9,   KC_F10,   KC_F11, KC_F12, DF(_QWERTY)
-            ),
+       _______, _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______,
+       KC_LSFT, _______, _______, _______, _______, _______, _______, MO(_NUMBER), MO(_FUNCTION),  _______, _______, _______, _______, _______, _______, _______,
+                                  _______, KC_LALT,   KC_F6, _______,     _______,       KC_LCTL,  _______, _______, _______, _______
+    ),
     [_SYMBOL] = LAYOUT(
-            _______,   LSFT(KC_1),   LSFT(KC_2),   LSFT(KC_3),   LSFT(KC_4),   LSFT(KC_5),                                                           LSFT(KC_6),   LSFT(KC_7),   LSFT(KC_8),   LSFT(KC_9),   LSFT(KC_0),       KC_EQL,
-            QK_CAPS_WORD_TOGGLE, _______,      _______,      _______,      _______,      _______,                                                              KC_LEFT,      KC_DOWN,        KC_UP,     KC_RIGHT,      _______, LSFT(KC_EQL),
-            _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      KC_HOME,      KC_PGDN,      KC_PGUP,       KC_END,      _______,      KC_BSLS,
-            _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______
+            _______, LSFT(KC_1),   LSFT(KC_2),   LSFT(KC_3),   LSFT(KC_4),   LSFT(KC_5),                                                         LSFT(KC_6),   LSFT(KC_7),   LSFT(KC_8),   LSFT(KC_9),   LSFT(KC_0),       LSFT(KC_EQL),
+            CWT,     _______,      _______,      _______,      _______,      _______,                                                            KC_LEFT,      KC_DOWN,        KC_UP,     KC_RIGHT,      KC_QUOTE, KC_EQL,
+            _______, _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,    _______,    _______,    _______,      _______,       _ARROW,      KC_BSLS,      LSFT(KC_BSLS),
+                                                 _______,      _______,      _______,      _______,      _______,      _______,    _______,    _______,      _______,      _______
             ),
     [_NUMBER] = LAYOUT(
-            KC_INS,         KC_1,         KC_2,         KC_3,         KC_4,         KC_5,                                                                 KC_6,         KC_7,         KC_8,         KC_9,         KC_0,       KC_DEL,
-            _______, _______,        LCURL,      KC_LPRN,      KC_RPRN,        RCURL,                                                              _______,      _______,      _______,      _______,      _______,       KC_EQL,
-            QK_CAPS_WORD_TOGGLE,      _______,      _______,      KC_LBRC,      KC_RBRC,       KC_EQL,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      KC_BSLS,      _______,
-            _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______,      _______
+             KC_INS,      KC_1,    KC_2,    KC_3,    KC_4,   KC_5,                                             KC_6,    KC_7,    KC_8,    KC_9,    KC_0,  KC_DEL,
+            _______,   KC_MINS,   LCURL, KC_LPRN, KC_RPRN,  RCURL,                                          _______, _______, _______, _______, _______,  KC_EQL,
+                CWT, CK_UNDRSC, KC_PLUS, KC_LBRC, KC_RBRC, KC_EQL,  _______, _______,     _______, _______, _______, _______, _______, _______, KC_BSLS, _______,
+                                         _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______
             ),
     [_FUNCTION] = LAYOUT(
             _______,        KC_F1,        KC_F2,        KC_F3,        KC_F4,        KC_F5,                                                                KC_F6,        KC_F7,        KC_F8,        KC_F9,       KC_F10,      _______,
@@ -71,8 +69,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             _______, LCAG(KC_1), LCAG(KC_2), LCAG(KC_3), LCAG(KC_4), LCAG(KC_5),                                 _______, _______, _______, _______, _______, _______,
             _______, _______, _______, _______, _______, _______,                                                _______, _______, _______, _______, _______, _______,
             _______, _______, _______, _______, _______, _______, _______,        _______,    _______, _______,  _______, RGB_MODE_FORWARD, RGB_MODE_REVERSE, _______, _______, _______,
-            _______, DF(_GAME), DF(_QWERTY), _______, _______,                                      _______, _______, _______, _______, _______
+            _______, DF(_GAME), DF(_QWERTY), OS_TOGG, _______,                                      QK_LEAD, _______, _______, _______, _______
             ),
+    [_TRANS] = LAYOUT(
+       _______, _______, _______, _______, _______, _______, _______,                                      _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______,                                      _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______, _______, _______,
+                                  _______, _______, _______, _______, _______, _______,  _______, _______, _______, _______
+    )
 };
 
 void leader_start_user(void) {
@@ -81,6 +85,12 @@ void leader_start_user(void) {
 void leader_end_user(void) {
     if (leader_sequence_two_keys(KC_P, KC_W)) {
         SEND_STRING(WORK_PASS);
+    }
+    if (leader_sequence_two_keys(KC_P, KC_F)) {
+        SEND_STRING(L_PASS);
+    }
+    if (leader_sequence_two_keys(KC_P, KC_B)) {
+        SEND_STRING(BITWARDEN_PASS);
     }
 }
 
@@ -97,23 +107,23 @@ uint16_t alt_tab_timer = 0;
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
-        if (IS_LAYER_ON(_NUMBER)) {
+        if (IS_LAYER_ON(_GAME)) {
             if (clockwise) {
-                register_code(KC_LCTL);
-                tap_code(KC_R);
-                unregister_code(KC_LCTL);
+                if (!is_alt_tab_active) {
+                    is_alt_tab_active = true;
+                    register_code(KC_LALT);
+                }
+                alt_tab_timer = timer_read();
+                tap_code(KC_TAB);
             } else {
-                tap_code(KC_U);
-            }
-        } else {
-            if (clockwise) {
-                register_code(KC_LCTL);
-                tap_code(KC_I);
-                unregister_code(KC_LCTL);
-            } else {
-                register_code(KC_LCTL);
-                tap_code(KC_O);
-                unregister_code(KC_LCTL);
+                if (!is_alt_tab_active) {
+                    is_alt_tab_active = true;
+                    register_code(KC_LALT);
+                }
+                alt_tab_timer = timer_read();
+                register_code(KC_LSFT);
+                tap_code(KC_TAB);
+                unregister_code(KC_LSFT);
             }
         }
     } else if (index == 1) {
@@ -179,6 +189,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
 
         switch (keycode) {
+            case _ARROW:
+                SEND_STRING("=>");
+                break;
         }
 
     } else {
@@ -250,10 +263,17 @@ void render_keyboard_state(void) {
     } else {
         oled_write_ln("SHIFT", false);
     }
+    oled_advance_page(true);
+
+    if (is_oneshot_enabled()) {
+        oled_write_ln("Oneshot: Enabled", false);
+    } else {
+        oled_write_ln("Oneshot: Disabled", false);
+    }
+
+    oled_advance_page(true);
+
     if (keyboard_buffer->head) {
-        oled_advance_page(true);
-        oled_advance_page(true);
-        oled_advance_page(true);
         oled_write(buffer_as_string, false);
     }
 }
