@@ -1,6 +1,7 @@
-#ifndef _buffer_h_
+#ifndef _JEMORGAN_BUFFER_H
+#define _JEMORGAN_BUFFER_H
+
 #include <stdint.h>
-#include "./utilities.h"
 
 struct node {
     char data;
@@ -8,6 +9,7 @@ struct node {
     struct node *previous;
 };
 
+// A referennce to a doubly-linked-list of characters
 struct buffer {
     struct node *head;
     struct node *tail;
@@ -15,11 +17,13 @@ struct buffer {
     uint8_t max_length;
 };
 
+// Returns an empty keyboard buffer
 struct buffer * const create_empty_buffer(void);
+// Returns a keyboard buffer containing a single character.
 struct buffer * const create_buffer_with_char(const char);
 struct buffer * const add_char_to_buffer(struct buffer*, const char);
 struct buffer * const add_keycode_to_buffer(struct buffer*, uint16_t);
-size_t get_buffer_as_string(const struct buffer*, char *);
+uint8_t get_buffer_as_string(const struct buffer*, char *);
 void free_buffer(const struct buffer*);
 
 #endif // !_buffer_h_

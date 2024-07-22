@@ -1,4 +1,7 @@
 // Taken from drashna's userspace directory at https://github.com/qmk/qmk_firmware/blob/master/users/drashna/oled/oled_stuff.c#L41-L96
+#ifndef _JEMORGAN_UTILITIES_H
+#define _JEMORGAN_UTILITIES_H
+
 #include <avr/pgmspace.h>
 static const char PROGMEM code_to_name[256] = {
 //   0    1    2    3    4    5    6    7    8    9    A    B    c    D    E    F
@@ -19,3 +22,5 @@ static const char PROGMEM code_to_name[256] = {
     'C', 'S', 'A', 'G', 'C', 'S', 'A', 'G', ' ', ' ', ' ', ' ', ' ',  24,  26,  24,  // Ex
      25,0x9D,0x9D,0x9D,0x9D,0x9D,0x9D,0x9D,0x9D,  24,  25,  27,  26, ' ', ' ', ' '   // Fx
 };
+
+#endif
